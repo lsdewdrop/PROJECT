@@ -238,7 +238,7 @@ namespace project
             }
             else //입력했을때
             {
-                int check = 0;
+                int check = 0;      //하위항목 중복검사
                 string query = "select detail from s_detail where title= @title";
                 MySqlCommand command = new MySqlCommand(query, con);
                 command.Parameters.AddWithValue("@title", com1_tex);
@@ -347,17 +347,40 @@ namespace project
             else //항목을 선택하였을 때
             {
                 string tex = textBox3.Text;
-                string inq = "insert into s_db (title,detail,contents) values (@title,@detail,@contents)"; //s_detail에 삽입
-                MySqlCommand mc = new MySqlCommand();
-                mc.Connection = con;
-                mc.CommandText = inq;
-                mc.Prepare();
-                mc.Parameters.AddWithValue("@title", com3_tex);
-                mc.Parameters.AddWithValue("@detail", com2_tex);
-                mc.Parameters.AddWithValue("@contents", tex);
-                mc.ExecuteNonQuery();
-                Form7.getinstance.ShowDialog();
-                
+
+                int check = 0;
+                string query_double = "select contents from s_db where title=@title and detail=@detail"; //문장 중복검사
+                MySqlCommand command_double = new MySqlCommand(query_double, con);
+                command_double.Parameters.AddWithValue("@title", com3_tex);
+                command_double.Parameters.AddWithValue("@detail", com2_tex);
+                MySqlDataReader reader_double = command_double.ExecuteReader();
+                while (reader_double.Read())
+                {
+                    string contents = reader_double.GetString("contents");
+                    if (tex == contents)
+                    {
+                        check = 1;
+                    }
+
+                }
+                reader_double.Close();
+                if (check == 0) //중복이 아닐 때
+                {
+                    string inq = "insert into s_db (title,detail,contents) values (@title,@detail,@contents)"; //s_detail에 삽입
+                    MySqlCommand mc = new MySqlCommand();
+                    mc.Connection = con;
+                    mc.CommandText = inq;
+                    mc.Prepare();
+                    mc.Parameters.AddWithValue("@title", com3_tex);
+                    mc.Parameters.AddWithValue("@detail", com2_tex);
+                    mc.Parameters.AddWithValue("@contents", tex);
+                    mc.ExecuteNonQuery();
+                    Form7.getinstance.ShowDialog();
+                }
+                else //중복일 때
+                {
+                    MessageBox.Show("이미 있는 항목입니다.", "에러");
+                }
             }
             comboBox3.Text = "선택";
             comboBox2.Text = "선택";
