@@ -87,8 +87,8 @@ namespace project
                 command.Prepare();
                 command.ExecuteNonQuery();
 
-                Form5.getinstance.comboBox1.Text = "";
-                Form5.getinstance.comboBox2.Text = "";
+                Form5.getinstance.comboBox1.SelectedItem = "";
+                Form5.getinstance.comboBox2.SelectedItem = "";
             }
             else //문장 삭제일때
             {

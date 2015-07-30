@@ -54,11 +54,11 @@ namespace project
             comboBox3.Hide();
             comboBox4.Hide();
 
-            comboBox1.Text = "";
-            comboBox2.Text = "";
+            comboBox1.SelectedItem = "";
+            comboBox2.SelectedItem = "";
             listBox1.Items.Clear();
-            comboBox3.Text = "";
-            comboBox4.Text = "";
+            comboBox3.SelectedItem = "";
+            comboBox4.SelectedItem = "";
 
             Form7.getinstance.check = 2;
         }
@@ -99,7 +99,7 @@ namespace project
         {
             check = 0;
 
-            if(comboBox1.Text=="")
+            if(comboBox1.SelectedItem=="")
             {
                 MessageBox.Show("항목을 선택해주세요", "에러");
             }
@@ -114,8 +114,8 @@ namespace project
         {
             this.Height = 325;
 
-            comboBox1.Text = "";
-            comboBox2.Text = "";
+            comboBox1.SelectedItem = "";
+            comboBox2.SelectedItem = "";
 
             label1.Location = new Point(164, 111);
             comboBox1.Location = new Point(55, 159);
@@ -168,7 +168,7 @@ namespace project
         {
             check = 1;
 
-            if(comboBox3.Text=="")
+            if(comboBox3.SelectedItem=="")
             {
                 MessageBox.Show("항목을 선택해주세요", "에러");
             }
@@ -201,8 +201,8 @@ namespace project
 
             button4.Hide(); //상위항목 숨기기
 
-            comboBox4.Text = "";
-            comboBox3.Text = "";
+            comboBox4.SelectedItem = "";
+            comboBox3.SelectedItem = "";
 
             string query = "select * from s_title";
             MySqlCommand command = new MySqlCommand(query,con);

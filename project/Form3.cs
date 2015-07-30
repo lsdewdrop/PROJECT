@@ -128,35 +128,58 @@ namespace project
             }
             else
             {
-                string query_title = "update s_title set title=@new_title where title=@old_title";
-                MySqlCommand mc_title = new MySqlCommand();
-                mc_title.Connection = con;
-                mc_title.CommandText = query_title;
-                mc_title.Prepare();
-                mc_title.Parameters.AddWithValue("@new_title", tex1_tex);
-                mc_title.Parameters.AddWithValue("@old_title", comboBox1.Text);
-                mc_title.ExecuteNonQuery();
+                int check = 0;
 
-                string query_detail = "update s_detail set title=@new_title where title=@old_title";
-                MySqlCommand mc_detail = new MySqlCommand();
-                mc_detail.Connection = con;
-                mc_detail.CommandText = query_detail;
-                mc_detail.Prepare();
-                mc_detail.Parameters.AddWithValue("@new_title", tex1_tex);
-                mc_detail.Parameters.AddWithValue("@old_title", comboBox1.Text);
-                mc_detail.ExecuteNonQuery();
+                string query_double = "select * from s_title"; //상위항목 중복검사
+                MySqlCommand command_double = new MySqlCommand(query_double, con);
+                MySqlDataReader reader_double = command_double.ExecuteReader();
+                while (reader_double.Read())
+                {
+                    string contents = reader_double.GetString("title");
+                    if (tex1_tex == contents)
+                    {
+                        check = 1;
+                    }
 
-                string query_db = "update s_db set title=@new_title where title=@old_title";
-                MySqlCommand mc_db = new MySqlCommand();
-                mc_db.Connection = con;
-                mc_db.CommandText = query_db;
-                mc_db.Prepare();
-                mc_db.Parameters.AddWithValue("@new_title", tex1_tex);
-                mc_db.Parameters.AddWithValue("@old_title", comboBox1.Text);
-                mc_db.ExecuteNonQuery();
-                Form7.getinstance.ShowDialog();
+                }
+                reader_double.Close();
+
+                if (check == 0) //중복이 아닐때
+                {
+                    string query_title = "update s_title set title=@new_title where title=@old_title";
+                    MySqlCommand mc_title = new MySqlCommand();
+                    mc_title.Connection = con;
+                    mc_title.CommandText = query_title;
+                    mc_title.Prepare();
+                    mc_title.Parameters.AddWithValue("@new_title", tex1_tex);
+                    mc_title.Parameters.AddWithValue("@old_title", comboBox1.Text);
+                    mc_title.ExecuteNonQuery();
+
+                    string query_detail = "update s_detail set title=@new_title where title=@old_title";
+                    MySqlCommand mc_detail = new MySqlCommand();
+                    mc_detail.Connection = con;
+                    mc_detail.CommandText = query_detail;
+                    mc_detail.Prepare();
+                    mc_detail.Parameters.AddWithValue("@new_title", tex1_tex);
+                    mc_detail.Parameters.AddWithValue("@old_title", comboBox1.Text);
+                    mc_detail.ExecuteNonQuery();
+
+                    string query_db = "update s_db set title=@new_title where title=@old_title";
+                    MySqlCommand mc_db = new MySqlCommand();
+                    mc_db.Connection = con;
+                    mc_db.CommandText = query_db;
+                    mc_db.Prepare();
+                    mc_db.Parameters.AddWithValue("@new_title", tex1_tex);
+                    mc_db.Parameters.AddWithValue("@old_title", comboBox1.Text);
+                    mc_db.ExecuteNonQuery();
+                    Form7.getinstance.ShowDialog();
+                }
+                else //중복일 때
+                {
+                    MessageBox.Show("이미 있는 항목입니다.", "에러");
+                }
             }
-            string query = "select * from s_title"; //콤보박스에 상위항목 보이기
+            string query = "select * from s_title"; // 수정이 끝나고 콤보박스에 상위항목 보이기
             MySqlCommand command = new MySqlCommand(query, con);
             MySqlDataReader reader = command.ExecuteReader();
             comboBox1.Items.Clear();
@@ -250,7 +273,7 @@ namespace project
 
         private void button5_Click(object sender, EventArgs e) //하위항목 수정 버튼
         {
-            if(comboBox3.Text=="")
+            if (comboBox3.Text == "")
             {
                 MessageBox.Show("항목을 입력해주세요.", "에러");
             }
@@ -259,41 +282,64 @@ namespace project
                 string com2_tex = comboBox2.Text;
                 string com3_tex = comboBox3.Text;
                 string tex2_tex = textBox2.Text;
-                
 
-                string query_detail = "update s_detail set detail=@new_detail where title=@title and detail=@old_detail";
-                MySqlCommand mc_detail = new MySqlCommand();
-                mc_detail.Connection = con;
-                mc_detail.CommandText = query_detail;
-                mc_detail.Prepare();
-                mc_detail.Parameters.AddWithValue("@new_detail", tex2_tex);
-                mc_detail.Parameters.AddWithValue("@title", com2_tex);
-                mc_detail.Parameters.AddWithValue("@old_detail", com3_tex);
-                mc_detail.ExecuteNonQuery();
+                int check = 0;
 
-                string query_db = "update s_db set detail=@new_detail where title=@title and detail=@old_detail";
-                MySqlCommand mc_db = new MySqlCommand();
-                mc_db.Connection = con;
-                mc_db.CommandText = query_db;
-                mc_db.Prepare();
-                mc_db.Parameters.AddWithValue("@new_detail", tex2_tex);
-                mc_db.Parameters.AddWithValue("@title", com2_tex);
-                mc_db.Parameters.AddWithValue("@old_detail", com3_tex);
-                mc_db.ExecuteNonQuery();
-
-                Form7.getinstance.ShowDialog();
-
-                string query = "select detail from s_detail where title=@title"; //콤보박스에 하위항목 보이기
-                MySqlCommand command = new MySqlCommand(query, con);
-                command.Parameters.AddWithValue("@title", com2_tex);
-                MySqlDataReader reader = command.ExecuteReader();
-                comboBox3.Items.Clear();
-                while (reader.Read())
+                string query_double = "select detail from s_detail where title=@title"; //하위항목 중복검사
+                MySqlCommand command_double = new MySqlCommand(query_double, con);
+                command_double.Parameters.AddWithValue("@title", com2_tex);
+                MySqlDataReader reader_double = command_double.ExecuteReader();
+                while (reader_double.Read())
                 {
-                    string contents = reader.GetString("detail");
-                    comboBox3.Items.Add(contents);
+                    string contents = reader_double.GetString("detail");
+                    if (tex2_tex == contents)
+                    {
+                        check = 1;
+                    }
+
                 }
-                reader.Close();
+                reader_double.Close();
+
+                if (check == 0)  //중복일 때
+                {
+                    string query_detail = "update s_detail set detail=@new_detail where title=@title and detail=@old_detail";
+                    MySqlCommand mc_detail = new MySqlCommand();
+                    mc_detail.Connection = con;
+                    mc_detail.CommandText = query_detail;
+                    mc_detail.Prepare();
+                    mc_detail.Parameters.AddWithValue("@new_detail", tex2_tex);
+                    mc_detail.Parameters.AddWithValue("@title", com2_tex);
+                    mc_detail.Parameters.AddWithValue("@old_detail", com3_tex);
+                    mc_detail.ExecuteNonQuery();
+
+                    string query_db = "update s_db set detail=@new_detail where title=@title and detail=@old_detail";
+                    MySqlCommand mc_db = new MySqlCommand();
+                    mc_db.Connection = con;
+                    mc_db.CommandText = query_db;
+                    mc_db.Prepare();
+                    mc_db.Parameters.AddWithValue("@new_detail", tex2_tex);
+                    mc_db.Parameters.AddWithValue("@title", com2_tex);
+                    mc_db.Parameters.AddWithValue("@old_detail", com3_tex);
+                    mc_db.ExecuteNonQuery();
+
+                    Form7.getinstance.ShowDialog();
+
+                    string query = "select detail from s_detail where title=@title"; //콤보박스에 하위항목 보이기
+                    MySqlCommand command = new MySqlCommand(query, con);
+                    command.Parameters.AddWithValue("@title", com2_tex);
+                    MySqlDataReader reader = command.ExecuteReader();
+                    comboBox3.Items.Clear();
+                    while (reader.Read())
+                    {
+                        string contents = reader.GetString("detail");
+                        comboBox3.Items.Add(contents);
+                    }
+                    reader.Close();
+                }
+                else //중복이 아닐 때
+                {
+                    MessageBox.Show("이미 있는 항목입니다.", "에러");
+                }
             }
             comboBox2.Text = "";
             comboBox3.Text = "";
@@ -378,17 +424,42 @@ namespace project
                 string tex2_tex = textBox2.Text;
                 string tex3_tex = textBox3.Text;
 
-                string query_db = "update s_db set contents=@new_contents where title=@title and detail=@detail and contents=@old_contents";
-                MySqlCommand mc_db = new MySqlCommand();
-                mc_db.Connection = con;
-                mc_db.CommandText = query_db;
-                mc_db.Prepare();
-                mc_db.Parameters.AddWithValue("@new_contents", tex3_tex);
-                mc_db.Parameters.AddWithValue("@old_contents", tex2_tex);
-                mc_db.Parameters.AddWithValue("@title", com5_tex);
-                mc_db.Parameters.AddWithValue("@detail", com4_tex);
-                mc_db.ExecuteNonQuery();
-                Form7.getinstance.ShowDialog();
+                int check = 0;
+
+                string query_double = "select contents from s_db where title=@title and detail=@detail"; //문장 중복검사
+                MySqlCommand command_double = new MySqlCommand(query_double, con);
+                command_double.Parameters.AddWithValue("@title", com5_tex);
+                command_double.Parameters.AddWithValue("@detail", com4_tex);
+                MySqlDataReader reader_double = command_double.ExecuteReader();
+                while (reader_double.Read())
+                {
+                    string contents = reader_double.GetString("contents");
+                    if (tex3_tex == contents)
+                    {
+                        check = 1;
+                    }
+
+                }
+                reader_double.Close();
+
+                if (check == 0)  //중복이 아닐 때
+                {
+                    string query_db = "update s_db set contents=@new_contents where title=@title and detail=@detail and contents=@old_contents";
+                    MySqlCommand mc_db = new MySqlCommand();
+                    mc_db.Connection = con;
+                    mc_db.CommandText = query_db;
+                    mc_db.Prepare();
+                    mc_db.Parameters.AddWithValue("@new_contents", tex3_tex);
+                    mc_db.Parameters.AddWithValue("@old_contents", tex2_tex);
+                    mc_db.Parameters.AddWithValue("@title", com5_tex);
+                    mc_db.Parameters.AddWithValue("@detail", com4_tex);
+                    mc_db.ExecuteNonQuery();
+                    Form7.getinstance.ShowDialog();
+                }
+                else //중복일 때
+                {
+                    MessageBox.Show("이미 있는 항목입니다.", "에러");
+                }
             }
             comboBox5.Text = "";
             comboBox4.Text = "";
